@@ -2,10 +2,14 @@
 
 SoftwareSerial BT(10, 11); // Bluetooth TX, Bluetooth RX
 int LED = 13;
+int KEY = 8;
 int DATA;
 
 void setup()
 {
+  digitalWrite(KEY, HIGH);  
+  delay(100);
+  Serial.begin(115200);
   BT.begin(9600);
   BT.println("Pultsa 1 LED-a biztuteko, Pultsa 0 LED-a amatateko");
   pinMode(LED, OUTPUT);
