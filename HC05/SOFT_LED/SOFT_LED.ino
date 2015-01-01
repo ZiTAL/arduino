@@ -9,7 +9,7 @@ void setup()
 {
   digitalWrite(KEY, HIGH);  
   delay(100);
-  Serial.begin(115200);
+  Serial.begin(9600);
   BT.begin(9600);
   BT.println("Pultsa 1 LED-a biztuteko, Pultsa 0 LED-a amatateko");
   pinMode(LED, OUTPUT);

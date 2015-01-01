@@ -9,7 +9,7 @@ void setup()
 {
   pinMode(KEY, OUTPUT); // AT komanduek sartzieko  
   pinMode(LED, OUTPUT);  
-  Serial.begin(115200);
+  Serial.begin(9600);
   findBaud();
 }
 

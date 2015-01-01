@@ -9,7 +9,7 @@ void setup()
   pinMode(KEY, OUTPUT);
   digitalWrite(KEY, HIGH);
   delay(100);
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("Sartun AT komanduek:");
   BT.begin(9600);
 }
