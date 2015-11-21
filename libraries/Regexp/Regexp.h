@@ -19,11 +19,10 @@
 
  */
 
-#ifndef _REGEXPS_
-#define _REGEXPS_
+
 // Maximum of captures we can return. 
 // Increase if you need more, decrease to save memory.
-#define MAXCAPTURES 16
+#define MAXCAPTURES 32
 
 // the "magic escape" character 
 #define REGEXP_ESC		'%'
@@ -58,17 +57,6 @@
 #define CAP_UNFINISHED	(-1)
 #define CAP_POSITION	(-2)
 
-//includes of Arduino STL
-#include <ctype>
-#include <iterator>
-#include <map>
-
-#include <Arduino.h>
-
-#include <setjmp.h>
-
-//end of includes
-
 class MatchState;  // forward definition for the callback routines
 
 typedef void (*GlobalMatchCallback)   (const char * match,          // matching string (not null-terminated)
@@ -84,22 +72,9 @@ private:
   
   char result;  // result of last Match call
   
-  //added by Andrew Pilipenko
-  std::map<char*, char*> Result; /*для результатов того, что мы будем отдавать пользователю*/
-  std::map<unsigned short, char*> tempResult; /*здесь будет храниться соответствие внутреннего номера группы её имени (если таковое задано)*/
-  
-  //methods
-  
-  //parce pattern and get number of named capture groups
-  void ParceGroups(const char* pattern);
-  
-  //to remove from pattern name of groups ( like ?<name> )
-  char* RemoveGroupNames(const char* pattern);
-  
-  
 public:
   
-  MatchState () : src (0), result (REGEXP_NOMATCH) {};  // constructor
+  MatchState () : result (REGEXP_NOMATCH), src (0) {};  // constructor
   MatchState (char * s) : result (REGEXP_NOMATCH) 
     { Target (s); };  // constructor from null-terminated string
   MatchState (char * s, const unsigned int len) : result (REGEXP_NOMATCH) 
@@ -150,19 +125,5 @@ public:
   // returns count of replacements
   unsigned int GlobalReplace (const char * pattern, char * replacement, const unsigned int max_count = 0);
   
-  //added by Andrew Pilipenko
-  
-  //clear maps and memory
-  void Clear();
-  
-  //parce pattern with named groups to map<char* groupName, char* matchedValue>
-  void MatchToGroups(const char* pattern);
-  
-  //get pointer to map filled by MatchToGroup
-  std::map<char*, char*>* GetGroups();
-  //
-  ~MatchState();
-  
 } MatchState;
 
-#endif
