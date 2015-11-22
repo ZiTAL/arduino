@@ -9,7 +9,7 @@ void setup()
   BT.begin(9600);
   Serial.begin(9600);
   
-  if(isATReady()==1)
+  if(isATReady())
   {
     Serial.println("Ready");
     while(true)
@@ -79,14 +79,17 @@ String getIbeaconList()
   BT.flush();
   BT.write("AT+DISI?");
   delay(10);
-  //OK+DISISOK+DISC:4C000215:74278BDAB64445208F0C720EAF059935:FFE0FFE1C5:78A5048CECAC:-053OK+DISC:4C000215:74278BDAB64445208F0C720EAF059935:FFE0FFE1C5:78A50485AF2D:-050OK+DISCE
-  response = getBt();
-  
-  while(response.startsWith(String("OK+DISIS"))==true && response.endsWith(String("OK+DISCE"))==false)
+/*
+  Response example:
+  OK+DISISOK+DISC:4C000215:74278BDAB64445208F0C720EAF059935:FFE0FFE1C5:78A5048CECAC:-053OK+DISC:4C000215:74278BDAB64445208F0C720EAF059935:FFE0FFE1C5:78A50485AF2D:-050OK+DISCE
+*/
+  do
   {
     response += getBt();
-    delay(10);
+    delay(10);    
   }
+  while(response.startsWith(String("OK+DISIS"))==true && response.endsWith(String("OK+DISCE"))==false);
+
   return response;
 }
 
