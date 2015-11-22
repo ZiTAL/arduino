@@ -30,7 +30,6 @@ void setup()
           // do nothing
         }
       }
-      delay(500);
     }
   }
   else
