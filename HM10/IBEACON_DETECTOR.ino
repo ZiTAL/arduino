@@ -1,8 +1,13 @@
 #include <SoftwareSerial.h>
 SoftwareSerial BT(7, 8);    // 7 Bluetooth TX, 8 Bluetooth RX
 
+int led = 13;
+
 void setup()
 {
+  pinMode(led, OUTPUT);
+  digitalWrite(led, LOW);
+
   String ibeacon_list;
   String my_ibeacon = "DISC:4C000215:74278BDAB64445208F0C720EAF059935:FFE0FFE1C5:78A5048CECAC";
   
@@ -11,6 +16,7 @@ void setup()
   
   if(isATReady())
   {
+    digitalWrite(led, HIGH);
     Serial.println("Ready");
     while(true)
     {
@@ -24,6 +30,7 @@ void setup()
       }
       else
       {
+        digitalWrite(led, LOW);
         Serial.println("Deskonektata! Erreliek salta!!!");
         while(true)
         {
