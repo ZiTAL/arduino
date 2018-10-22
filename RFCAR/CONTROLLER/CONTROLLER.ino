@@ -21,6 +21,9 @@ int LEFT_D;
 int LEFT_B_V;
 int RIGHT_B_V;
 
+float LEFT_MIN = 75;
+float LEFT_MAX = 255;
+
 // RF
 
 const int pinCE = 9;
@@ -34,7 +37,7 @@ char data[5];
 
 void setup()
 {
-    Serial.begin(9600);
+    //Serial.begin(9600);
     pinMode(LEFT_B, INPUT_PULLUP);
     pinMode(RIGHT_B, INPUT_PULLUP);
 
@@ -79,6 +82,8 @@ void loop()
         LEFT_Y_V = 255 - (LEFT_Y_V / 2);
       else
         LEFT_Y_V = (LEFT_Y_V / 2) / 2 * -1;
+
+      LEFT_Y_V = powerCalc(LEFT_Y_V, LEFT_MIN, LEFT_MAX);
     }
     
     String str = String(LEFT_Y_V);
@@ -86,6 +91,25 @@ void loop()
     
     // Copy it over 
     str.toCharArray(data, str_len);
-    Serial.println(data);
     radio.write(data, sizeof data);
+}
+
+int powerCalc(int v, float min, float max)
+{
+  float j;
+  int r;
+  int v2;
+
+  v2 = v;
+
+  if(v2<0)
+    v = v * -1;  
+  
+  j = round(v * ((max - min) / max) + min); 
+  r = j;
+
+  if(v2<0)
+    r = r * -1;
+
+  return r;
 }
