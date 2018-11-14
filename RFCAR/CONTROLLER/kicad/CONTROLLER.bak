@@ -1,0 +1,183 @@
+EESchema Schematic File Version 4
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L power:PWR_FLAG #FLG?
+U 1 1 5BEC91A7
+P 6500 4700
+F 0 "#FLG?" H 6500 4775 50  0001 C CNN
+F 1 "PWR_FLAG" H 6500 4874 50  0000 C CNN
+F 2 "" H 6500 4700 50  0001 C CNN
+F 3 "~" H 6500 4700 50  0001 C CNN
+	1    6500 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG?
+U 1 1 5BEC92B8
+P 6950 4700
+F 0 "#FLG?" H 6950 4775 50  0001 C CNN
+F 1 "PWR_FLAG" H 6950 4874 50  0000 C CNN
+F 2 "" H 6950 4700 50  0001 C CNN
+F 3 "~" H 6950 4700 50  0001 C CNN
+	1    6950 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+9V #PWR?
+U 1 1 5BEC9304
+P 6500 4700
+F 0 "#PWR?" H 6500 4550 50  0001 C CNN
+F 1 "+9V" H 6515 4873 50  0000 C CNN
+F 2 "" H 6500 4700 50  0001 C CNN
+F 3 "" H 6500 4700 50  0001 C CNN
+	1    6500 4700
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5BEC9365
+P 6950 4700
+F 0 "#PWR?" H 6950 4450 50  0001 C CNN
+F 1 "GND" H 6955 4527 50  0000 C CNN
+F 2 "" H 6950 4700 50  0001 C CNN
+F 3 "" H 6950 4700 50  0001 C CNN
+	1    6950 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+9V #PWR?
+U 1 1 5BEC938E
+P 7450 4700
+F 0 "#PWR?" H 7450 4550 50  0001 C CNN
+F 1 "+9V" H 7465 4873 50  0000 C CNN
+F 2 "" H 7450 4700 50  0001 C CNN
+F 3 "" H 7450 4700 50  0001 C CNN
+	1    7450 4700
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5BEC93B7
+P 7750 4700
+F 0 "#PWR?" H 7750 4450 50  0001 C CNN
+F 1 "GND" H 7755 4527 50  0000 C CNN
+F 2 "" H 7750 4700 50  0001 C CNN
+F 3 "" H 7750 4700 50  0001 C CNN
+	1    7750 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 5BEC9473
+P 7600 4500
+F 0 "C?" V 7855 4500 50  0000 C CNN
+F 1 "CP" V 7764 4500 50  0000 C CNN
+F 2 "" H 7638 4350 50  0001 C CNN
+F 3 "~" H 7600 4500 50  0001 C CNN
+	1    7600 4500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7450 4700 7450 4500
+Wire Wire Line
+	7750 4700 7750 4500
+$Comp
+L Regulator_Linear:L7805 U?
+U 1 1 5BEC9506
+P 7600 3950
+F 0 "U?" H 7600 4192 50  0000 C CNN
+F 1 "L7805" H 7600 4101 50  0000 C CNN
+F 2 "" H 7625 3800 50  0001 L CIN
+F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf" H 7600 3900 50  0001 C CNN
+	1    7600 3950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7450 4500 7450 4250
+Wire Wire Line
+	7450 4250 7300 4250
+Wire Wire Line
+	7300 4250 7300 3950
+Connection ~ 7450 4500
+Wire Wire Line
+	7750 4500 7750 4250
+Wire Wire Line
+	7750 4250 7600 4250
+Connection ~ 7750 4500
+$Comp
+L Device:CP C?
+U 1 1 5BEC95AE
+P 8050 3950
+F 0 "C?" V 8305 3950 50  0000 C CNN
+F 1 "CP" V 8214 3950 50  0000 C CNN
+F 2 "" H 8088 3800 50  0001 C CNN
+F 3 "~" H 8050 3950 50  0001 C CNN
+	1    8050 3950
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7750 4500 8200 4500
+Wire Wire Line
+	8200 4500 8200 3950
+$Comp
+L Regulator_Linear:LM1117-3.3 U?
+U 1 1 5BEC973C
+P 7600 3200
+F 0 "U?" H 7600 3442 50  0000 C CNN
+F 1 "LM1117-3.3" H 7600 3351 50  0000 C CNN
+F 2 "" H 7600 3200 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/lm1117.pdf" H 7600 3200 50  0001 C CNN
+	1    7600 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 5BEC976A
+P 8050 3950
+F 0 "C?" V 8305 3950 50  0000 C CNN
+F 1 "CP" V 8214 3950 50  0000 C CNN
+F 2 "" H 8088 3800 50  0001 C CNN
+F 3 "~" H 8050 3950 50  0001 C CNN
+	1    8050 3950
+	0    -1   -1   0   
+$EndComp
+Connection ~ 8200 3950
+Connection ~ 7900 3950
+$Comp
+L Device:CP C?
+U 1 1 5BEC9820
+P 8050 3200
+F 0 "C?" V 8305 3200 50  0000 C CNN
+F 1 "CP" V 8214 3200 50  0000 C CNN
+F 2 "" H 8088 3050 50  0001 C CNN
+F 3 "~" H 8050 3200 50  0001 C CNN
+	1    8050 3200
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	8200 3950 8200 3500
+Wire Wire Line
+	8200 3500 7600 3500
+Wire Wire Line
+	8200 3500 8200 3200
+Connection ~ 8200 3500
+Wire Wire Line
+	7900 3950 7900 3600
+Wire Wire Line
+	7900 3600 7300 3600
+Wire Wire Line
+	7300 3600 7300 3200
+$EndSCHEMATC
