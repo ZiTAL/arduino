@@ -61,23 +61,23 @@ $EndComp
 $Comp
 L power:+9V #PWR0103
 U 1 1 5BEC938E
-P 7450 4700
-F 0 "#PWR0103" H 7450 4550 50  0001 C CNN
-F 1 "+9V" H 7465 4873 50  0000 C CNN
-F 2 "" H 7450 4700 50  0001 C CNN
-F 3 "" H 7450 4700 50  0001 C CNN
-	1    7450 4700
+P 7300 5250
+F 0 "#PWR0103" H 7300 5100 50  0001 C CNN
+F 1 "+9V" H 7315 5423 50  0000 C CNN
+F 2 "" H 7300 5250 50  0001 C CNN
+F 3 "" H 7300 5250 50  0001 C CNN
+	1    7300 5250
 	-1   0    0    1   
 $EndComp
 $Comp
 L power:GND #PWR0104
 U 1 1 5BEC93B7
-P 7750 4700
-F 0 "#PWR0104" H 7750 4450 50  0001 C CNN
-F 1 "GND" H 7755 4527 50  0000 C CNN
-F 2 "" H 7750 4700 50  0001 C CNN
-F 3 "" H 7750 4700 50  0001 C CNN
-	1    7750 4700
+P 7600 5450
+F 0 "#PWR0104" H 7600 5200 50  0001 C CNN
+F 1 "GND" H 7605 5277 50  0000 C CNN
+F 2 "" H 7600 5450 50  0001 C CNN
+F 3 "" H 7600 5450 50  0001 C CNN
+	1    7600 5450
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -185,4 +185,200 @@ Wire Wire Line
 	8800 4650 8800 4500
 Connection ~ 8200 4650
 Connection ~ 8800 4500
+$Comp
+L Device:Crystal Y1
+U 1 1 5BF5DD23
+P 8350 3400
+F 0 "Y1" H 8350 3668 50  0000 C CNN
+F 1 "Crystal" H 8350 3577 50  0000 C CNN
+F 2 "" H 8350 3400 50  0001 C CNN
+F 3 "~" H 8350 3400 50  0001 C CNN
+	1    8350 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8200 3400 8200 3200
+Wire Wire Line
+	8200 3200 8350 3200
+Wire Wire Line
+	8450 3200 8500 3200
+Wire Wire Line
+	8500 3200 8500 3400
+$Comp
+L Device:C C5
+U 1 1 5BF5E25F
+P 9050 4500
+F 0 "C5" V 8798 4500 50  0000 C CNN
+F 1 "C" V 8889 4500 50  0000 C CNN
+F 2 "" H 9088 4350 50  0001 C CNN
+F 3 "~" H 9050 4500 50  0001 C CNN
+	1    9050 4500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8800 4650 9200 4650
+Wire Wire Line
+	9200 4650 9200 4500
+Connection ~ 8800 4650
+$Comp
+L Device:C C6
+U 1 1 5BF5E6DE
+P 9450 4500
+F 0 "C6" V 9198 4500 50  0000 C CNN
+F 1 "C" V 9289 4500 50  0000 C CNN
+F 2 "" H 9488 4350 50  0001 C CNN
+F 3 "~" H 9450 4500 50  0001 C CNN
+	1    9450 4500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	9200 4650 9600 4650
+Wire Wire Line
+	9600 4650 9600 4500
+Connection ~ 9200 4650
+Wire Wire Line
+	8200 3400 8200 3600
+Wire Wire Line
+	8200 3600 8900 3600
+Wire Wire Line
+	8900 3600 8900 4500
+Connection ~ 8200 3400
+Wire Wire Line
+	8500 3400 9300 3400
+Wire Wire Line
+	9300 3400 9300 4500
+Connection ~ 8500 3400
+Wire Wire Line
+	8350 2600 8350 3200
+$Comp
+L MCU_Microchip_ATmega:ATmega328P-PU U3
+U 1 1 5BF46BC3
+P 7850 2000
+F 0 "U3" V 7072 2000 50  0000 C CNN
+F 1 "ATmega328P-PU" V 7163 2000 50  0000 C CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 7850 2000 50  0001 C CIN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega328_P%20AVR%20MCU%20with%20picoPower%20Technology%20Data%20Sheet%2040001984A.pdf" H 7850 2000 50  0001 C CNN
+	1    7850 2000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	9600 4500 9600 600 
+Wire Wire Line
+	9600 600  9050 600 
+Wire Wire Line
+	6100 600  6100 2000
+Wire Wire Line
+	6100 2000 6350 2000
+Connection ~ 9600 4500
+Wire Wire Line
+	7900 3950 7900 3000
+$Comp
+L Connector:Conn_01x01_Male J4
+U 1 1 5BF63996
+P 9050 1200
+F 0 "J4" V 9110 1240 50  0000 L CNN
+F 1 "Conn_01x01_Male" V 9201 1240 50  0000 L CNN
+F 2 "" H 9050 1200 50  0001 C CNN
+F 3 "~" H 9050 1200 50  0001 C CNN
+	1    9050 1200
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Conn_01x06_Male J3
+U 1 1 5BF64068
+P 8750 2800
+F 0 "J3" V 8903 2413 50  0000 R CNN
+F 1 "Conn_01x06_Male" V 8812 2413 50  0000 R CNN
+F 2 "" H 8750 2800 50  0001 C CNN
+F 3 "~" H 8750 2800 50  0001 C CNN
+	1    8750 2800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:Conn_01x07_Male J2
+U 1 1 5BF64106
+P 7850 2800
+F 0 "J2" V 7778 2777 50  0000 C CNN
+F 1 "Conn_01x07_Male" V 7687 2777 50  0000 C CNN
+F 2 "" H 7850 2800 50  0001 C CNN
+F 3 "~" H 7850 2800 50  0001 C CNN
+	1    7850 2800
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7900 3000 9350 3000
+$Comp
+L Connector:Conn_01x08_Male J1
+U 1 1 5BF658B0
+P 6950 2800
+F 0 "J1" V 6878 2727 50  0000 C CNN
+F 1 "Conn_01x08_Male" V 6787 2727 50  0000 C CNN
+F 2 "" H 6950 2800 50  0001 C CNN
+F 3 "~" H 6950 2800 50  0001 C CNN
+	1    6950 2800
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	8450 3200 8450 2600
+Wire Wire Line
+	9350 3000 9350 2100
+Connection ~ 9350 2100
+$Comp
+L Device:LED D1
+U 1 1 5BF6873C
+P 9200 800
+F 0 "D1" H 9191 1016 50  0000 C CNN
+F 1 "LED" H 9191 925 50  0000 C CNN
+F 2 "" H 9200 800 50  0001 C CNN
+F 3 "~" H 9200 800 50  0001 C CNN
+	1    9200 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9050 800  9050 600 
+Connection ~ 9050 600 
+Wire Wire Line
+	9050 600  6100 600 
+Wire Wire Line
+	9350 2000 9350 2100
+$Comp
+L Device:R R1
+U 1 1 5BF6BD52
+P 9350 950
+F 0 "R1" H 9420 996 50  0000 L CNN
+F 1 "R 470" H 9420 905 50  0000 L CNN
+F 2 "" V 9280 950 50  0001 C CNN
+F 3 "~" H 9350 950 50  0001 C CNN
+	1    9350 950 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9350 1100 9350 2000
+Connection ~ 9350 2000
+$Comp
+L Analog_Switch:ADG417BN U4
+U 1 1 5BF6D5EA
+P 7600 5250
+F 0 "U4" H 7600 5517 50  0000 C CNN
+F 1 "ADG417BN" H 7600 5426 50  0000 C CNN
+F 2 "Package_DIP:DIP-8_W7.62mm" H 7600 5150 50  0001 C CNN
+F 3 "http://www.analog.com/media/en/technical-documentation/data-sheets/ADG417.pdf" H 7600 5250 50  0001 C CNN
+	1    7600 5250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7600 5450 7900 5450
+Wire Wire Line
+	7900 5450 7900 5250
+Connection ~ 7600 5450
+Wire Wire Line
+	7900 5250 7900 4700
+Wire Wire Line
+	7900 4700 7750 4700
+Connection ~ 7900 5250
+Wire Wire Line
+	7450 4700 7300 4700
+Wire Wire Line
+	7300 4700 7300 5250
+Connection ~ 7300 5250
 $EndSCHEMATC
