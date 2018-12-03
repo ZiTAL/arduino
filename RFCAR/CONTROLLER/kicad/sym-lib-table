@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name CONTROLLER2-rescue)(type Legacy)(uri ${KIPRJMOD}/CONTROLLER2-rescue.lib)(options "")(descr ""))
-)
