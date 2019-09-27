@@ -1,15 +1,16 @@
+
 // Demonstration Arduino sketch for four digit, seven segment display with enclosure
 // http://tronixlabs.com/display/led/numeric/four-digit-seven-segment-display-module-and-enclosure/
 
 #include <EEPROM.h>
 
-int latchPin = 13;   // connect to LCK pin
-int clockPin = 12;   // connect to CLK pin
+int latchPin = 9;   // connect to LOAD pin
+int clockPin = 10;   // connect to SCLK pin
 int dataPin = 11;    // connect to SDI pin
 
-int sum = 6;
+int sum = 7;
 int sumState = 0;
-int rest = 5;
+int rest = 8;
 int restState = 0;
 
 /*
@@ -41,7 +42,7 @@ void setup()
   pinMode(sum, INPUT);
   pinMode(rest, INPUT);
 
-  //resetMemory();
+  // resetMemory();
 }
 
 void loop() 
@@ -106,3 +107,7 @@ void writeMemory(int left, int right)
   EEPROM.write(1, right);  
 }
 
+void resetMemory()
+{
+  writeMemory(0, 0);
+}
