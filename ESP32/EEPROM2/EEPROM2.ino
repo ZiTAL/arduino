@@ -19,29 +19,49 @@ void setup()
   unsigned long current_time;
   
   Serial.begin(115200);
-  Serial.print("start: ");Serial.println(start_time);
+  Serial.print("EEPROM: ");
+  Serial.println(start_time);
   
   if (!EEPROM.begin(EEPROM_SIZE))
   {
-    Serial.println("failed to initialise EEPROM"); delay(1000000);
+    Serial.println("failed to initialise EEPROM");
   }
+  else
+  {
+    // write();
+    read();
 
-  for (int i = 0; i < EEPROM_SIZE; i++)
-    EEPROM.write(i, 1);
-  EEPROM.commit();
+    end_time = millis();
+    current_time = end_time - start_time;
 
-  for (int i = 0; i < EEPROM_SIZE; i++)
-    EEPROM.read(i);
-
-  EEPROM.end();
-  end_time = millis();
-  current_time = end_time - start_time;
-
-  Serial.print("end: ");Serial.println(end_time);
-  Serial.print("total: ");Serial.println(current_time);
+    Serial.print("Elapsed time: ");
+    Serial.println(current_time);
+  }
 }
 
 void loop()
 {
     
+}
+
+void write()
+{
+    Serial.println("write:");
+    for (int i = 0; i < EEPROM_SIZE; i++)
+    {
+      EEPROM.write(i, 1);
+      Serial.println(i);
+    } 
+    EEPROM.commit();  
+}
+
+void read()
+{
+    Serial.printf("read:");
+    for (int i = 0; i < EEPROM_SIZE; i++)
+    {
+      EEPROM.read(i);
+      //Serial.println(i);
+    }
+    EEPROM.end();  
 }
