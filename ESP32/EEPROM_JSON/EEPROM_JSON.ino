@@ -10,19 +10,23 @@
 //
 // https://arduinojson.org/v6/example/string/
 
+
+#include <EEPROM.h>
 #include <ArduinoJson.h>
+
+int EEPROM_SIZE = 1024;
 
 void setup() {
     Serial.begin(115200);
-  DynamicJsonDocument doc(1024);
+  DynamicJsonDocument doc(EEPROM_SIZE);
 
   // You can use a String as your JSON input.
   // WARNING: the string in the input  will be duplicated in the JsonDocument.
   String input =
-      "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
+      "{\"codename\":\"sotapatroi\",\"version\":0.2,\"beacons\":[48.756080,2.302038]}";
   deserializeJson(doc, input);
   JsonObject obj = doc.as<JsonObject>();
-
+/*
   // You can use a String to get an element of a JsonObject
   // No duplication is done.
   long time = obj[String("time")];
@@ -55,25 +59,20 @@ void setup() {
   if (obj["sensor"] == sensor) {
     // ...
   }
-
+*/
+  Serial.println("Sotapatroi:");  
   // Lastly, you can print the resulting JSON to a String
   String output;
   serializeJson(doc, output);
-  Serial.println(output);
+/*
+  EEPROM.put(0, output);
+  Serial.println("Write data to memory");  
+*/
+  EEPROM.get(0, output);
+  Serial.println("Read data from memory");
+  Serial.println(output);  
 }
 
 void loop() {
   // not used in this example
 }
-
-// See also
-// --------
-//
-// https://arduinojson.org/ contains the documentation for all the functions
-// used above. It also includes an FAQ that will help you solve any problem.
-//
-// The book "Mastering ArduinoJson" contains a quick C++ course that explains
-// how your microcontroller stores strings in memory. On several occasions, it
-// shows how you can avoid String in your program.
-// Learn more at https://arduinojson.org/book/
-// Use the coupon code TWENTY for a 20% discount ❤❤❤❤❤
