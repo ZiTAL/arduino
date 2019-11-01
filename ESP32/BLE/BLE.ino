@@ -15,32 +15,31 @@ BLEScan* pBLEScan;
 
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
 {
-    void onResult(BLEAdvertisedDevice advertisedDevice)
+    void onResult(BLEAdvertisedDevice daylight)
     {
-      //Serial.printf("Device: %s \n", advertisedDevice.toString().c_str());
-      Serial.printf("Device: %s \n", advertisedDevice.toString().c_str());
-      Serial.printf("Address: %s \n", advertisedDevice.getAddress().toString().c_str());
+      Serial.printf("Device: %s \n", d.toString().c_str());
+      Serial.printf("Address: %s \n", d.getAddress().toString().c_str());
 
-      if(advertisedDevice.haveName())
-        Serial.printf("Name: %s \n", advertisedDevice.getName().c_str());
+      if(d.haveName())
+        Serial.printf("Name: %s \n", d.getName().c_str());
 
-      if(advertisedDevice.haveAppearance())
-        Serial.printf("Appearance: %d \n", (int)advertisedDevice.getAppearance());
+      if(d.haveAppearance())
+        Serial.printf("Appearance: %d \n", (int)d.getAppearance());
 
-      if(advertisedDevice.haveManufacturerData())
+      if(d.haveManufacturerData())
       {
-        std::string md = advertisedDevice.getManufacturerData();
-        uint8_t *mdp = (uint8_t *)advertisedDevice.getManufacturerData().data();
+        std::string md = d.getManufacturerData();
+        uint8_t *mdp = (uint8_t *)d.getManufacturerData().data();
         char *pHex = BLEUtils::buildHexData(nullptr, mdp, md.length());
         Serial.printf("ManufacturerData: %s \n", pHex);
         free(pHex);
       }
 
-      if(advertisedDevice.haveServiceUUID())
-        Serial.printf("ServiceUUID: %s \n", advertisedDevice.getServiceUUID().toString().c_str());
+      if(d.haveServiceUUID())
+        Serial.printf("ServiceUUID: %s \n", d.getServiceUUID().toString().c_str());
 
-      if(advertisedDevice.haveTXPower())
-        Serial.printf("TxPower: %d \n", (int)advertisedDevice.getTXPower());
+      if(d.haveTXPower())
+        Serial.printf("TxPower: %d \n", (int)d.getTXPower());
 
       Serial.println("-----------------------------------------");
     }
