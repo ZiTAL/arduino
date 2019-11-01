@@ -15,9 +15,15 @@
 #include <ArduinoJson.h>
 
 int EEPROM_SIZE = 1024;
+#define R1 17
 
 void setup() {
-    Serial.begin(115200);
+  Serial.begin(115200);
+
+  pinMode(R1, OUTPUT);
+  digitalWrite(R1, LOW);
+  digitalWrite(R1, HIGH);
+
   DynamicJsonDocument doc(EEPROM_SIZE);
 
   // You can use a String as your JSON input.
