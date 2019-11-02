@@ -14,6 +14,7 @@
 #define R1 17
 
 String BEACON = "6f:ef:c0:f4:c9:98";
+char BEACONS[2][18] = {"40:6a:d6:0e:c5:6c", "40:6a:d6:0e:c5:6c"};
 bool FOUND = false;
 
 int SCAN_TIME = 1; //In seconds
