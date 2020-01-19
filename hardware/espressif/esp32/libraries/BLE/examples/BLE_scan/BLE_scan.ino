@@ -1,40 +1,52 @@
-/*
-   Based on Neil Kolban example for IDF: https://github.com/nkolban/esp32-snippets/blob/master/cpp_utils/tests/BLE%20Tests/SampleScan.cpp
-   Ported to Arduino ESP32 by Evandro Copercini
-*/
+#define COUNT 5
+#define ADDRESS 19
 
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEScan.h>
-#include <BLEAdvertisedDevice.h>
+char s[COUNT][ADDRESS];
+char t[COUNT][ADDRESS];
 
-int scanTime = 5; //In seconds
-BLEScan* pBLEScan;
-
-class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
-    void onResult(BLEAdvertisedDevice advertisedDevice) {
-      Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
-    }
-};
-
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Scanning...");
-
-  BLEDevice::init("");
-  pBLEScan = BLEDevice::getScan(); //create new scan
-  pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
-  pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
-  pBLEScan->setInterval(100);
-  pBLEScan->setWindow(99);  // less or equal setInterval value
+void setup()
+{
+    Serial.begin(115200);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
-  Serial.print("Devices found: ");
-  Serial.println(foundDevices.getCount());
-  Serial.println("Scan done!");
-  pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
-  delay(2000);
+void loop()
+{
+        
+    for(int i=0; i<COUNT; i++)
+    {
+      String b = "123456789012345678";
+      b.toCharArray(s[i], ADDRESS);
+    }
+
+    for(int i=0; i<COUNT; i++)
+    {
+      String b = s[i];
+      b.toCharArray(t[i], ADDRESS);
+    }
+    printArray(t);
+
+    for(int i=0; i<COUNT; i++)
+    {
+      String b = "ABCDEFGHIJKLMNÑOPQ";
+      b.toCharArray(s[i], ADDRESS);
+    }
+
+    for(int i=0; i<COUNT; i++)
+    {
+      String b = s[i];
+      b.toCharArray(t[i], ADDRESS);
+    }    
+
+    printArray(t);
+    delay(1000);  
+}
+
+int printArray(char array[COUNT][ADDRESS])
+{
+    for(int i=0; i<COUNT; i++)
+    {
+        String obj = array[i];
+        //if(obj!="")
+            Serial.println(obj);
+    }
 }
