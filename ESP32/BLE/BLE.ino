@@ -23,7 +23,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
       String address = d.getAddress().toString().c_str();
       address.toCharArray(BEACONS[INDEX], 18);
       INDEX++;
-/*      
+
       Serial.printf("Device: %s \n", d.toString().c_str());
       Serial.printf("Address: %s \n", d.getAddress().toString().c_str());
 
@@ -49,7 +49,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
         Serial.printf("TxPower: %d \n", (int)d.getTXPower());
 
       Serial.println("-----------------------------------------");
-*/      
+
     }
 };
 

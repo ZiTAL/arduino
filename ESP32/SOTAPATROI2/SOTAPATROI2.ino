@@ -10,6 +10,8 @@
 #include <BLEScan.h>
 #include <BLEAdvertisedDevice.h>
 
+#define APP_NAME "SOTAPATROI"
+
 // beacon-aren izena, etorkizunean "SOTAPATROI"
 #define BEACON_NAME "WGX_iBeacon"
 
@@ -38,12 +40,21 @@ int BEACON_GET_INDEX = 0;
 // Zenbat beacon izango ditugun gehienez eta beacon bakoitzaren helbidearen tamaina
 char BEACON_GET_LIST[BEACON_MAX_CLIENTS][BEACON_ADDRESS_LENGTH];
 
+int ONDO = 0;
+int TXARTO = 0;
+
 void setup()
 {    
     Serial.begin(115200);
     Serial.printf("Sotapatroi 0.2\n");
 
     int m = millis();
+
+    // reset array
+    String empty = "                  ";
+    for(int i=0; i<BEACON_MAX_CLIENTS; i++)
+        empty.toCharArray(BEACON_SET_LIST[i], BEACON_ADDRESS_LENGTH);
+    BEACON_SET_INDEX = 0;
 
     // Hasieran lortutako beacon-ak zerrendan sartu: BEACON_SET_LIST
     BEACON_SCAN_TYPE = "SET";
@@ -59,21 +70,40 @@ void setup()
     printArray(BEACON_SET_LIST);
     Serial.printf("Device count: %d\n", BEACON_SET_INDEX);
 
-    BEACON_SCAN_TYPE = "GET";
+    if(BEACON_SET_INDEX>0)
+        BEACON_SCAN_TYPE = "GET";
+    else
+        Serial.println("No beacon found!");
 }
 
 void loop()
 {
-    for(int i=0; i<BEACON_MAX_CLIENTS; i++)
+    if(BEACON_SET_INDEX>0)
     {
-      String b = "                  ";
-      b.toCharArray(BEACON_GET_LIST[i], BEACON_ADDRESS_LENGTH);
-    }
-    BEACON_GET_INDEX = 0;
-    getBeaconList();
+        // reset array
+        String empty = "                  ";
+        for(int i=0; i<BEACON_MAX_CLIENTS; i++)
+            empty.toCharArray(BEACON_GET_LIST[i], BEACON_ADDRESS_LENGTH);
 
-    printArray(BEACON_GET_LIST);
-    Serial.printf("Device count: %d\n", BEACON_GET_INDEX);    
+        BEACON_GET_INDEX = 0;
+        getBeaconList();
+
+        // beacon baten bat falta da
+        if(BEACON_GET_INDEX<BEACON_SET_INDEX)
+        {
+            String obj = "";
+            Serial.printf("Ez dira aurkitu:\n");
+            for(int i=0; i<BEACON_MAX_CLIENTS; i++)
+            {
+                obj = String(BEACON_SET_LIST[i]);
+                obj.trim();
+                if(obj!="" && !inArray(obj, BEACON_GET_LIST))
+                {
+                    Serial.println(obj);
+                }
+            }
+        }
+    }
 }
 
 class BLEgetListCallback: public BLEAdvertisedDeviceCallbacks
@@ -95,8 +125,7 @@ class BLEgetListCallback: public BLEAdvertisedDeviceCallbacks
         }
         else
         {
-            Serial.println(mac);
-            if(BEACON_GET_INDEX<BEACON_MAX_CLIENTS && name.indexOf(BEACON_NAME)!=-1 && !inArray(mac, BEACON_GET_LIST))
+            if(inArray(mac, BEACON_SET_LIST))
             {
                 mac.toCharArray(BEACON_GET_LIST[BEACON_GET_INDEX], BEACON_ADDRESS_LENGTH);
                 BEACON_GET_INDEX++;
@@ -107,15 +136,17 @@ class BLEgetListCallback: public BLEAdvertisedDeviceCallbacks
 
 void initBeaconList()
 {
-    BLEDevice::init("BLE_LIST");
+    BLEDevice::init(APP_NAME);
     //create new scan
     BLE = BLEDevice::getScan();
     BLE->setAdvertisedDeviceCallbacks(new BLEgetListCallback());
     //active scan uses more power, but get results faster
     BLE->setActiveScan(true);
+/*    
     BLE->setInterval(100);
     // less or equal setInterval value
     BLE->setWindow(99);
+*/
 }
 
 void getBeaconList()
