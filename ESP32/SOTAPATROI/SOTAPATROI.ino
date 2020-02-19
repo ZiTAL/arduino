@@ -1,4 +1,3 @@
-#include <ArduinoJson.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEScan.h>
@@ -26,10 +25,14 @@ String BEACON_SCAN_TYPE = "SET";
 // hasierako zerrendako BLE objetua
 BLEScan* BLE;
 
-StaticJsonDocument<512> DOC;
-JsonArray BEACONS = DOC.createNestedArray("beacons");
-JsonObject FOUNDS = DOC.createNestedObject("founds");
-JsonObject ERRORS = DOC.createNestedObject("errors");
+typedef struct
+{ 
+    String mac;
+    uint8_t found;
+    uint8_t error;
+} BEACONS_STRUCT;
+
+BEACONS_STRUCT BEACONS[BEACON_MAX_CLIENTS];
 
 void setup()
 {    
@@ -46,23 +49,35 @@ void setup()
         getBeaconList();
     }
     Serial.println("");
-
-    if(BEACONS.size()>0)
-    {
-        BEACON_SCAN_TYPE = 'GET';
-        serializeJsonPretty(DOC, Serial);
-    }
+    if(getBeaconsLength()>0)
+        BEACON_SCAN_TYPE = "GET";
     else
-        Serial.println("No beacon found!");
+        Serial.println("Beacons not found!");
 }
 
 void loop()
 {
-    if(BEACONS.size()>0)
+    if(getBeaconsLength()>0)
     {
         resetBeaconList();
         getBeaconList();
         setErrorBeaconsNotFound();
+
+        for(int i=0; i<BEACON_MAX_CLIENTS; i++)
+        {
+            if(BEACONS[i].mac!="")
+            {
+                Serial.print("mac: ");
+                Serial.print(BEACONS[i].mac);
+                Serial.print(" - ");
+                Serial.print("found: ");
+                Serial.print(BEACONS[i].found);
+                Serial.print(" - ");
+                Serial.print("error: ");
+                Serial.print(BEACONS[i].error);
+            }
+        }        
+
         if(isError())
         {
             while(true)
@@ -70,9 +85,6 @@ void loop()
 
             }
         }
-        serializeJsonPretty(DOC, Serial);
-        Serial.println();
-        Serial.println(millis());
     }
 }
 
@@ -87,19 +99,19 @@ class BLEgetListCallback: public BLEAdvertisedDeviceCallbacks
 
         if(BEACON_SCAN_TYPE=="SET")
         {
-            if(BEACONS.size()<BEACON_MAX_CLIENTS && name.indexOf(BEACON_NAME)!=-1 && !inJsonArray(mac, BEACONS))
+            int beacons_length = getBeaconsLength();
+            if(beacons_length<BEACON_MAX_CLIENTS && name.indexOf(BEACON_NAME)!=-1 && getBeaconIndex(mac)==-1)
             {
-                BEACONS.add(mac);
-                ERRORS[mac] = 0;
+                BEACONS[beacons_length].mac = mac;
+                BEACONS[beacons_length].found = 1;
+                BEACONS[beacons_length].error = 0;
             }
         }
         else
         {
-            if(inJsonArray(mac, BEACONS))
-            {
-                FOUNDS[mac] = 1;
-                ERRORS[mac] = 0;
-            }
+            int index = getBeaconIndex(mac);
+            if(index>-1)
+                BEACONS[index].found = 1;
         }
     }
 };
@@ -125,48 +137,51 @@ void getBeaconList()
     BLE->clearResults();
 }
 
-bool inJsonArray(String str, JsonArray array)
+int getBeaconIndex(String mac)
 {
-    int l = array.size();
-    for(int i=0; i<l; i++)
+    for(int i=0; i<BEACON_MAX_CLIENTS; i++)
     {
-        String v = array[i];
-        if(str==v)
-            return true;
+        if(BEACONS[i].mac==mac)
+            return i;
     }
-    return false;
+    return -1;
 }
 
 void resetBeaconList()
 {
-    for(int i=0; i<BEACONS.size(); i++)
+    for(int i=0; i<BEACON_MAX_CLIENTS; i++)
     {
-        String mac = BEACONS[i];
-        FOUNDS[mac] = 0;
-    }    
+        if(BEACONS[i].mac!="")
+            BEACONS[i].found = 0;
+    }
+}
+
+int getBeaconsLength()
+{
+    int c = 0;
+    for(int i=0; i<BEACON_MAX_CLIENTS; i++)
+    {
+        if(BEACONS[i].mac!="")
+            c++;
+    }
+    return c;
 }
 
 void setErrorBeaconsNotFound()
 {
     // if mac not found error + 1;
-    for(int i=0; i<BEACONS.size(); i++)
+    for(int i=0; i<BEACON_MAX_CLIENTS; i++)
     {
-        String mac = BEACONS[i];
-        int c = ERRORS[mac];
-
-        if(FOUNDS[mac]==0)
-            ERRORS[mac] = c+1;
+        if(BEACONS[i].mac!="" && BEACONS[i].found==0)
+            BEACONS[i].error = BEACONS[i].error+1;
     }
 }
 
 bool isError()
 {
-    for(int i=0; i<BEACONS.size(); i++)
+    for(int i=0; i<BEACON_MAX_CLIENTS; i++)
     {
-        String mac = BEACONS[i];
-        int c = ERRORS[mac];
-
-        if(c>BEACON_MAX_ERROR)
+        if(BEACONS[i].mac!="" && BEACONS[i].error > BEACON_MAX_ERROR)
             return true;
     }
     return false;
