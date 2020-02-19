@@ -19,6 +19,12 @@
 
 #define BEACON_MAX_ERROR 2
 
+#define RELAY01 17
+#define RELAY02 17
+
+#define RELAY02_TIMEOUT 5000
+
+
 // scan mota SET/GET
 String BEACON_SCAN_TYPE = "SET";
 
@@ -28,8 +34,8 @@ BLEScan* BLE;
 typedef struct
 { 
     String mac;
-    uint8_t found;
-    uint8_t error;
+    int found;
+    int error;
 } BEACONS_STRUCT;
 
 BEACONS_STRUCT BEACONS[BEACON_MAX_CLIENTS];
@@ -41,6 +47,7 @@ void setup()
 
     int m = millis();
 
+    prepareRelays();
     initBeaconList();
     Serial.printf("Searching beacons:\n");
     while(millis()<m+BEACON_SEARCH_TIME)
@@ -61,7 +68,7 @@ void loop()
     {
         resetBeaconList();
         getBeaconList();
-        setErrorBeaconsNotFound();
+        setBeaconError();
 
         for(int i=0; i<BEACON_MAX_CLIENTS; i++)
         {
@@ -75,11 +82,25 @@ void loop()
                 Serial.print(" - ");
                 Serial.print("error: ");
                 Serial.print(BEACONS[i].error);
+                Serial.println();
             }
         }        
 
         if(isError())
         {
+            Serial.println("Launch RELAY01");
+            digitalWrite(RELAY01, HIGH);
+            
+            int m = millis();
+            Serial.println("Waiting for launch RELAY02");
+            while(millis()<m+RELAY02_TIMEOUT)
+            {
+                if((millis()%1000==0))
+                    Serial.print(".");
+            }
+                
+            Serial.println("Launch RELAY02");
+            digitalWrite(RELAY02, HIGH);
             while(true)
             {
 
@@ -111,10 +132,21 @@ class BLEgetListCallback: public BLEAdvertisedDeviceCallbacks
         {
             int index = getBeaconIndex(mac);
             if(index>-1)
+            {
                 BEACONS[index].found = 1;
+                BEACONS[index].error = 0;
+            }
         }
     }
 };
+
+void prepareRelays()
+{
+    pinMode(RELAY01, OUTPUT);
+    digitalWrite(RELAY01, LOW);
+    pinMode(RELAY02, OUTPUT);
+    digitalWrite(RELAY02, LOW);
+}
 
 void initBeaconList()
 {
@@ -167,7 +199,7 @@ int getBeaconsLength()
     return c;
 }
 
-void setErrorBeaconsNotFound()
+void setBeaconError()
 {
     // if mac not found error + 1;
     for(int i=0; i<BEACON_MAX_CLIENTS; i++)
@@ -181,8 +213,14 @@ bool isError()
 {
     for(int i=0; i<BEACON_MAX_CLIENTS; i++)
     {
-        if(BEACONS[i].mac!="" && BEACONS[i].error > BEACON_MAX_ERROR)
+        if(BEACONS[i].mac!="" && BEACONS[i].error >= BEACON_MAX_ERROR)
+        {
+            Serial.print("Beacon");
+            Serial.print(BEACONS[i].mac);
+            Serial.print(" no found!");
+            Serial.println();
             return true;
+        }
     }
     return false;
 }
