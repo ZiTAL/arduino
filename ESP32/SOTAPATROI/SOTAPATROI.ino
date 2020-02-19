@@ -211,16 +211,16 @@ void setBeaconError()
 
 bool isError()
 {
+    bool error = false;
     for(int i=0; i<BEACON_MAX_CLIENTS; i++)
     {
         if(BEACONS[i].mac!="" && BEACONS[i].error >= BEACON_MAX_ERROR)
         {
-            Serial.print("Beacon");
+            error = true;
+            Serial.print("Beacon not found: ");
             Serial.print(BEACONS[i].mac);
-            Serial.print(" no found!");
             Serial.println();
-            return true;
         }
     }
-    return false;
+    return error;
 }
