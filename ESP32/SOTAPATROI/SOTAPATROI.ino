@@ -88,18 +88,19 @@ void loop()
 
         if(isError())
         {
-            Serial.println("Launch RELAY01");
+            Serial.println("Launched RELAY01!");
             digitalWrite(RELAY01, HIGH);
             
             int m = millis();
-            Serial.println("Waiting for launch RELAY02");
+            Serial.println("Waiting for launch RELAY02...");
             while(millis()<m+RELAY02_TIMEOUT)
             {
-                if((millis()%1000==0))
+                if(millis()%1000==0)
                     Serial.print(".");
+                delay(5);
             }
                 
-            Serial.println("Launch RELAY02");
+            Serial.println("Launched RELAY02!");
             digitalWrite(RELAY02, HIGH);
             while(true)
             {
