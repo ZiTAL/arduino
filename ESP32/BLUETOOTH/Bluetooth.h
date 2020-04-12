@@ -3,21 +3,25 @@
 class Bluetooth
 {
     public:
-      static void init();
-
-      static void setCallback(String callback);
-      static void onConnect();
-      static void onReceivedStart();
-      static void onReceivedEnd();
-      static void onWriteStart();
-      static void onWriteEnd();
-      static String getCallback();
+      static void setup();
+      static void loop();
+      static void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param);
 
     private:
       static BluetoothSerial _serial;
+      static String _callback;
       static String _read_line;
       static String _write_line;
-      static String _beacon_name;
-      static String _callback;
+
+      static void onConnect();
+
+      static void onReceivedStart();
+      static void onReceivedEnd();
+
+      static void onWriteStart();
+      static void onWriteEnd();
+
+      static void clearBuffer();
+
       Bluetooth();
 };

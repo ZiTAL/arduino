@@ -1,57 +1,57 @@
-#include "Bluetooth.h"
+#include "Bluetooth2.h"
 
 void BluetoothCallback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 {
-    if(event == ESP_SPP_SRV_OPEN_EVT)               // CONNECTION STABLISHED
-    {
-        Bluetooth::setCallback("onConnect");
-    }
-    else if(event == ESP_SPP_CLOSE_EVT)             // CONNECTION CLOSED
-    {
-        // ESP.restart();
-        // setup();
-    }
-    else if(event == ESP_SPP_DATA_IND_EVT)          // DATA RECEIVED
-    {
-        Bluetooth::setCallback("onReceivedStart");
-    }
-}
-
-Bluetooth::Bluetooth()
-{
+    Bluetooth::callback(event, param);
 }
 
 BluetoothSerial Bluetooth::_serial;
 String Bluetooth::_callback;
 String Bluetooth::_read_line;
 String Bluetooth::_write_line;
-String Bluetooth::_beacon_name;
 
-void Bluetooth::init()
+void Bluetooth::setup()
 {
-    _callback = "";
-    _read_line = "";
-    _write_line = "";
-    _beacon_name = "SOTAPATROI";
-
     _serial.register_callback(BluetoothCallback);
-    _serial.begin("SOTAPATROI");    
+    _serial.begin("SOTAPATROI");
+
+    _callback = ""; 
 }
 
-void Bluetooth::setCallback(String callback)
+void Bluetooth::loop()
 {
-    _callback = callback;
+    if(_callback=="onConnect")
+        Bluetooth::onConnect();
+    else if(_callback=="onWriteStart")
+        Bluetooth::onWriteStart();
+    else if(_callback=="onReceivedStart")
+        Bluetooth::onReceivedStart();
 }
 
-String Bluetooth::getCallback()
+void Bluetooth::callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 {
-    return _callback;
+    if(_callback=="")
+    {
+        if(event == ESP_SPP_DATA_IND_EVT)          // DATA RECEIVED
+            _callback = "onReceivedStart";
+    }
+    else
+        Bluetooth::clearBuffer();
+
+    if(event == ESP_SPP_SRV_OPEN_EVT)               // CONNECTION STABLISHED
+        _callback = "onConnect";
+
+    else if(event == ESP_SPP_CLOSE_EVT)             // CONNECTION CLOSED
+    {
+        // ESP.restart();
+        // setup();
+    }
 }
 
 void Bluetooth::onConnect()
 {
     _write_line = "SOTAPATROI CONFIG TOOL";
-    Bluetooth::setCallback("onWriteStart");
+    _callback = "onWriteStart";
 }
 
 void Bluetooth::onReceivedStart()
@@ -63,25 +63,23 @@ void Bluetooth::onReceivedStart()
             _read_line = _read_line + char(b);
     }
     else
-    {
         Bluetooth::onReceivedEnd();
-    }
 }
 
 void Bluetooth::onReceivedEnd()
 {
-    if(_read_line == "AT")
+    Bluetooth::clearBuffer();
+    if(_read_line=="AT")
     {
         _write_line = "OK";
     }
     else if(_read_line.startsWith("AT+BEACON_NAME?"))
     {
-        _write_line = _beacon_name;
+        _write_line = "SOTAPATROI";
     }
     else if(_read_line.startsWith("AT+BEACON_NAME="))
     {
         _read_line.replace("AT+BEACON_NAME=", "");
-        _beacon_name = _read_line;
         _write_line = "OK";
     }
     else if(_read_line.startsWith("AT+RESET"))
@@ -95,8 +93,7 @@ void Bluetooth::onReceivedEnd()
     {
         _write_line = "AT+HELP? for HELP";
     }
-
-    Bluetooth::setCallback("onWriteStart");
+    _callback = "onWriteStart";
 }
 
 void Bluetooth::onWriteStart()
@@ -105,16 +102,27 @@ void Bluetooth::onWriteStart()
     {
         _serial.print(_write_line[0]);
         _write_line.remove(0, 1);
-        if(_write_line=="")
-            _serial.println();
     }
     else
+    {
+        _serial.println();
         Bluetooth::onWriteEnd();
+    }
 }
 
 void Bluetooth::onWriteEnd()
 {
     _read_line = "";
     _write_line = "";
-    Bluetooth::setCallback("");
+    _callback = "";
+}
+
+void Bluetooth::clearBuffer()
+{
+    while(_serial.available())
+        _serial.read();
+}
+
+Bluetooth::Bluetooth()
+{
 }

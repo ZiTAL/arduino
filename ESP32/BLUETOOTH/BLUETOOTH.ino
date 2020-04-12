@@ -1,4 +1,4 @@
-#include "Bluetooth.h"
+#include "Bluetooth2.h"
 
 void setup()
 {
@@ -6,22 +6,10 @@ void setup()
     while (!Serial)
     {
     }
-    Bluetooth::init();
+    Bluetooth::setup();
 }
 
 void loop()
 {
-    String callback = Bluetooth::getCallback();
-    if(callback=="onConnect")
-    {
-        Bluetooth::onConnect();
-    }
-    else if(callback=="onWriteStart")
-    {
-        Bluetooth::onWriteStart();
-    }    
-    else if(callback=="onReceivedStart")
-    {
-        Bluetooth::onReceivedStart();
-    }
+    Bluetooth::loop();
 }
