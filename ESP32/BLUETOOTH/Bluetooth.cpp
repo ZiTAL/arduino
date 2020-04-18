@@ -1,10 +1,11 @@
-#include "Bluetooth2.h"
+#include "Bluetooth.h"
 
 void BluetoothCallback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 {
     Bluetooth::callback(event, param);
 }
 
+boolean Bluetooth::_enabled;
 BluetoothSerial Bluetooth::_serial;
 String Bluetooth::_callback;
 String Bluetooth::_read_line;
@@ -43,15 +44,33 @@ void Bluetooth::callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 
     else if(event == ESP_SPP_CLOSE_EVT)             // CONNECTION CLOSED
     {
-        // ESP.restart();
-        // setup();
+        _enabled = false;
+        ESP.restart();
     }
+}
+
+boolean Bluetooth::isButtonPressed(int pin)
+{
+    if(digitalRead(pin)==LOW)
+        _enabled = true;
+    else
+        _enabled = false;    
+
+    return _enabled;
+}
+
+boolean Bluetooth::isEnabled()
+{
+    return _enabled;
 }
 
 void Bluetooth::onConnect()
 {
-    _write_line = "SOTAPATROI CONFIG TOOL";
+    _callback = "";
+/*    
+    _write_line = "SOTAPATROI CONFIG TOOL\n*****************************";
     _callback = "onWriteStart";
+*/
 }
 
 void Bluetooth::onReceivedStart()
@@ -75,7 +94,7 @@ void Bluetooth::onReceivedEnd()
     }
     else if(_read_line.startsWith("AT+BEACON_NAME?"))
     {
-        _write_line = "SOTAPATROI";
+        _write_line = Config::getBeaconBame(); // HAU EZ DABIL
     }
     else if(_read_line.startsWith("AT+BEACON_NAME="))
     {
@@ -85,9 +104,13 @@ void Bluetooth::onReceivedEnd()
     else if(_read_line.startsWith("AT+RESET"))
     {
     }
-    else if(_read_line.startsWith("AT+HELP?"))
+    else if(_read_line.startsWith("AT+HELP"))
     {
         _write_line = "HELP...";
+    }
+    else if(_read_line.startsWith("AT+RESTART"))
+    {
+        _enabled = false;
     }
     else
     {
@@ -121,8 +144,4 @@ void Bluetooth::clearBuffer()
 {
     while(_serial.available())
         _serial.read();
-}
-
-Bluetooth::Bluetooth()
-{
 }
