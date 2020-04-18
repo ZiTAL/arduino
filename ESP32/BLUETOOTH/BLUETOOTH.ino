@@ -35,6 +35,6 @@ void loop()
         Bluetooth::loop(); 
     else // Bestela programa aurrera
     {
-        Serial.println(Config::getBeaconName()); // HAU BADABIL
+
     }
 }

@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "BluetoothSerial.h"
 class Bluetooth
 {
@@ -25,4 +26,6 @@ class Bluetooth
       static void onWriteEnd();
 
       static void clearBuffer();
+
+      static String _getHelp();
 };
