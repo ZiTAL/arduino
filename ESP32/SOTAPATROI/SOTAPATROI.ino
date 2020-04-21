@@ -12,7 +12,7 @@
 #define BEACON_MAX_CLIENTS 5
 
 // zenbat denboraz beacon bila segundutan
-#define BEACON_SCAN_TIME 1
+#define BEACON_SCAN_TIME 2
 
 // hasieran zenbat milisegundoz izango den beacon bila
 #define BEACON_SEARCH_TIME 5000

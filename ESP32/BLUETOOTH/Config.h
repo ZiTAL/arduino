@@ -35,8 +35,7 @@ class Config
             int RELAY2;
             int FLAG;
         };    
-        static Config::CONFIG_STRUCT _info;
-        static void getInfo();
+        static Config::CONFIG_STRUCT _instance;
         static void _save(void *data_source, size_t size);
         static void _load(void *data_dest, size_t size);
 };
