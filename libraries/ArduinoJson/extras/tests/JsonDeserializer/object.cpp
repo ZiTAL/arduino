@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright Benoit Blanchon 2014-2021
 // MIT License
 
 #include <ArduinoJson.h>
@@ -182,8 +182,8 @@ TEST_CASE("deserialize JSON object") {
       REQUIRE(err == DeserializationError::Ok);
       REQUIRE(doc.is<JsonObject>());
       REQUIRE(obj.size() == 2);
-      REQUIRE(obj["key1"].as<char*>() == 0);
-      REQUIRE(obj["key2"].as<char*>() == 0);
+      REQUIRE(obj["key1"].as<const char*>() == 0);
+      REQUIRE(obj["key2"].as<const char*>() == 0);
     }
 
     SECTION("Array") {
@@ -289,5 +289,11 @@ TEST_CASE("deserialize JSON object") {
     REQUIRE(doc.is<JsonObject>());
     REQUIRE(obj.size() == 0);
     REQUIRE(doc.memoryUsage() == JSON_OBJECT_SIZE(0));
+  }
+
+  SECTION("Issue #1335") {
+    std::string json("{\"a\":{},\"b\":{}}");
+    deserializeJson(doc, json);
+    CHECK(doc.as<std::string>() == json);
   }
 }

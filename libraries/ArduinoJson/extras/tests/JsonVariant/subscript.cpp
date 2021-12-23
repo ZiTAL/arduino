@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright Benoit Blanchon 2014-2021
 // MIT License
 
 #include <ArduinoJson.h>
@@ -43,10 +43,10 @@ TEST_CASE("JsonVariant::operator[]") {
     SECTION("set value") {
       array.add("hello");
 
-      var[0] = "world";
+      var[1] = "world";
 
-      REQUIRE(1 == var.size());
-      REQUIRE(std::string("world") == var[0]);
+      REQUIRE(var.size() == 2);
+      REQUIRE(std::string("world") == var[1]);
     }
 
     SECTION("set value in a nested object") {
@@ -57,6 +57,15 @@ TEST_CASE("JsonVariant::operator[]") {
       REQUIRE(1 == var.size());
       REQUIRE(1 == var[0].size());
       REQUIRE(std::string("world") == var[0]["hello"]);
+    }
+
+    SECTION("variant[0] when variant contains an integer") {
+      var.set(123);
+
+      var[0] = 345;  // no-op
+
+      REQUIRE(var.is<int>());
+      REQUIRE(var.as<int>() == 123);
     }
   }
 

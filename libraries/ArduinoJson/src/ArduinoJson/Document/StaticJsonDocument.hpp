@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright Benoit Blanchon 2014-2021
 // MIT License
 
 #pragma once
@@ -42,6 +42,11 @@ class StaticJsonDocument : public JsonDocument {
   StaticJsonDocument operator=(const T& src) {
     set(src);
     return *this;
+  }
+
+  void garbageCollect() {
+    StaticJsonDocument tmp(*this);
+    set(tmp);
   }
 
  private:

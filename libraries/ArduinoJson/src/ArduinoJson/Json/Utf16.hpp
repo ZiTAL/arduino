@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright Benoit Blanchon 2014-2021
 // MIT License
 
 #pragma once
@@ -7,6 +7,16 @@
 #include <ArduinoJson/Namespace.hpp>
 
 #include <stdint.h>  // uint16_t, uint32_t
+
+// The high surrogate may be uninitialized if the pair is invalid,
+// we choose to ignore the problem to reduce the size of the code
+// Garbage in => Garbage out
+#if defined(__GNUC__)
+#  if __GNUC__ >= 7
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#  endif
+#endif
 
 namespace ARDUINOJSON_NAMESPACE {
 
@@ -21,6 +31,8 @@ inline bool isLowSurrogate(uint16_t codeunit) {
 
 class Codepoint {
  public:
+  Codepoint() : _highSurrogate(0), _codepoint(0) {}
+
   bool append(uint16_t codeunit) {
     if (isHighSurrogate(codeunit)) {
       _highSurrogate = codeunit & 0x3FF;
@@ -47,3 +59,9 @@ class Codepoint {
 };
 }  // namespace Utf16
 }  // namespace ARDUINOJSON_NAMESPACE
+
+#if defined(__GNUC__)
+#  if __GNUC__ >= 8
+#    pragma GCC diagnostic pop
+#  endif
+#endif

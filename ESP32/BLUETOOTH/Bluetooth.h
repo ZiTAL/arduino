@@ -1,5 +1,6 @@
 #include "Config.h"
 #include "BluetoothSerial.h"
+
 class Bluetooth
 {
     public:

@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright Benoit Blanchon 2014-2021
 // MIT License
 
 #define ARDUINOJSON_DECODE_UNICODE 1
@@ -15,6 +15,14 @@ TEST_CASE("Valid JSON strings value") {
   TestCase testCases[] = {
       {"\"hello world\"", "hello world"},
       {"\'hello world\'", "hello world"},
+      {"'\"'", "\""},
+      {"'\\\\'", "\\"},
+      {"'\\/'", "/"},
+      {"'\\b'", "\b"},
+      {"'\\f'", "\f"},
+      {"'\\n'", "\n"},
+      {"'\\r'", "\r"},
+      {"'\\t'", "\t"},
       {"\"1\\\"2\\\\3\\/4\\b5\\f6\\n7\\r8\\t9\"", "1\"2\\3/4\b5\f6\n7\r8\t9"},
       {"'\\u0041'", "A"},
       {"'\\u00e4'", "\xc3\xa4"},                 // ä
@@ -33,9 +41,28 @@ TEST_CASE("Valid JSON strings value") {
     const TestCase& testCase = testCases[i];
     CAPTURE(testCase.input);
     DeserializationError err = deserializeJson(doc, testCase.input);
-    REQUIRE(err == DeserializationError::Ok);
-    REQUIRE(doc.as<std::string>() == testCase.expectedOutput);
+    CHECK(err == DeserializationError::Ok);
+    CHECK(doc.as<std::string>() == testCase.expectedOutput);
   }
+}
+
+TEST_CASE("\\u0000") {
+  StaticJsonDocument<200> doc;
+
+  DeserializationError err = deserializeJson(doc, "\"wx\\u0000yz\"");
+  REQUIRE(err == DeserializationError::Ok);
+
+  const char* result = doc.as<const char*>();
+  CHECK(result[0] == 'w');
+  CHECK(result[1] == 'x');
+  CHECK(result[2] == 0);
+  CHECK(result[3] == 'y');
+  CHECK(result[4] == 'z');
+  CHECK(result[5] == 0);
+
+  // ArduinoJson strings doesn't store string length, so the following returns 2
+  // instead of 5 (issue #1646)
+  CHECK(doc.as<std::string>().size() == 2);
 }
 
 TEST_CASE("Truncated JSON string") {
@@ -54,7 +81,7 @@ TEST_CASE("Truncated JSON string") {
 
 TEST_CASE("Invalid JSON string") {
   const char* testCases[] = {"'\\u'",     "'\\u000g'", "'\\u000'",
-                             "'\\u000G'", "'\\u000/'", "\\x1234"};
+                             "'\\u000G'", "'\\u000/'", "'\\x1234'"};
   const size_t testCount = sizeof(testCases) / sizeof(testCases[0]);
 
   DynamicJsonDocument doc(4096);
@@ -66,10 +93,16 @@ TEST_CASE("Invalid JSON string") {
   }
 }
 
-TEST_CASE("Not enough room to duplicate the string") {
-  DynamicJsonDocument doc(4);
+TEST_CASE("Not enough room to save the key") {
+  DynamicJsonDocument doc(JSON_OBJECT_SIZE(1) + 8);
 
-  REQUIRE(deserializeJson(doc, "\"hello world!\"") ==
-          DeserializationError::NoMemory);
-  REQUIRE(doc.isNull() == true);
+  SECTION("Quoted string") {
+    REQUIRE(deserializeJson(doc, "{\"accuracy\":1}") ==
+            DeserializationError::NoMemory);
+  }
+
+  SECTION("Non-quoted string") {
+    REQUIRE(deserializeJson(doc, "{accuracy:1}") ==
+            DeserializationError::NoMemory);
+  }
 }

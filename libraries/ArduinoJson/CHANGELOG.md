@@ -1,6 +1,254 @@
 ArduinoJson: change log
 =======================
 
+v6.18.5 (2021-09-28)
+-------
+
+* Set `ARDUINOJSON_EMBEDDED_MODE` to `1` on Nios II (issue #1657)
+
+v6.18.4 (2021-09-06)
+-------
+
+* Fixed error `'dummy' may be used uninitialized` on GCC 11
+* Fixed error `expected unqualified-id before 'const'` on GCC 11 (issue #1622)
+* Filter: exact match takes precedence over wildcard (issue #1628)
+* Fixed deserialization of `\u0000` (issue #1646)
+
+v6.18.3 (2021-07-27)
+-------
+
+* Changed return type of `convertToJson()` and `Converter<T>::toJson()` to `void`
+* Added `as<std::string_view>()` and `is<std::string_view>()`
+
+v6.18.2 (2021-07-19)
+-------
+
+* Removed a symlink because the Arduino Library Specification forbids it
+
+v6.18.1 (2021-07-03)
+-------
+
+* Fixed support for `volatile float` and `volatile double` (issue #1557)
+* Fixed error `[Pe070]: incomplete type is not allowed` on IAR (issue #1560)
+* Fixed `serializeJson(doc, String)` when allocation fails (issue #1572)
+* Fixed clang-tidy warnings (issue #1574, PR #1577 by @armandas)
+* Added fake class `InvalidConversion<T1,T2>` to easily identify invalid conversions (issue #1585)
+* Added support for `std::string_view` (issue #1578, PR #1554 by @0xFEEDC0DE64)
+* Fixed warning `definition of implicit copy constructor for 'MsgPackDeserializer' is deprecated because it has a user-declared copy assignment operator`
+* Added `JsonArray::clear()` (issue #1597)
+* Fixed `JsonVariant::as<unsigned>()` (issue #1601)
+* Added support for ESP-IDF component build (PR #1562 by @qt1, PR #1599 by @andreaskuster)
+
+v6.18.0 (2021-05-05)
+-------
+
+* Added support for custom converters (issue #687)
+* Added support for `Printable` (issue #1444)
+* Removed support for `char` values, see below (issue #1498)
+* `deserializeJson()` leaves `\uXXXX` unchanged instead of returning `NotSupported`
+* `deserializeMsgPack()` inserts `null` instead of returning `NotSupported`
+* Removed `DeserializationError::NotSupported`
+* Added `JsonVariant::is<JsonArrayConst/JsonObjectConst>()` (issue #1412)
+* Added `JsonVariant::is<JsonVariant/JsonVariantConst>()` (issue #1412)
+* Changed `JsonVariantConst::is<JsonArray/JsonObject>()` to return `false` (issue #1412)
+* Simplified `JsonVariant::as<T>()` to always return `T` (see below)
+* Updated folders list in `.mbedignore` (PR #1515 by @AGlass0fMilk)
+* Fixed member-call-on-null-pointer in `getMember()` when array is empty
+* `serializeMsgPack(doc, buffer, size)` doesn't add null-terminator anymore (issue #1545)
+* `serializeJson(doc, buffer, size)` adds null-terminator only if there is enough room
+* PlatformIO: set `build.libArchive` to `false` (PR #1550 by @askreet)
+
+> ### BREAKING CHANGES
+>
+> #### Support for `char` removed
+>
+> We cannot cast a `JsonVariant` to a `char` anymore, so the following will break:
+> ```c++
+> char age = doc["age"];  //  error: no matching function for call to 'variantAs(VariantData*&)'
+> ```
+> Instead, you must use another integral type, such as `int8_t`:
+> ```c++
+> int8_t age = doc["age"];  // OK
+> ```
+>
+> Similarly, we cannot assign from a `char` anymore, so the following will break:
+> ```c++
+> char age;
+> doc["age"] = age;  // error: no matching function for call to 'VariantRef::set(const char&)'
+> ```
+> Instead, you must use another integral type, such as `int8_t`:
+> ```c++
+> int8_t age;
+> doc["age"] = age;  // OK
+> ```
+> A deprecation warning with the message "Support for `char` is deprecated, use `int8_t` or `uint8_t` instead" was added to allow a smooth transition.
+>
+> #### `as<T>()` always returns `T`
+>
+> Previously, `JsonVariant::as<T>()` could return a type different from `T`.
+> The most common example is `as<char*>()` that returned a `const char*`.
+> While this feature simplified a few use cases, it was confusing and complicated the
+> implementation of custom converters.
+>
+> Starting from this version, `as<T>` doesn't try to auto-correct the return type and always return `T`,
+> which means that you cannot write this anymore:
+>
+> ```c++
+> Serial.println(doc["sensor"].as<char*>());  // error: invalid conversion from 'const char*' to 'char*' [-fpermissive]
+> ```
+> 
+> Instead, you must write:
+>
+> ```c++
+> Serial.println(doc["sensor"].as<const char*>());  // OK
+> ```
+>
+> A deprecation warning with the message "Replace `as<char*>()` with `as<const char*>()`" was added to allow a smooth transition.
+>
+> #### `DeserializationError::NotSupported` removed
+>
+> On a different topic, `DeserializationError::NotSupported` has been removed.
+> Instead of returning this error:
+>
+> * `deserializeJson()` leaves `\uXXXX` unchanged (only when `ARDUINOJSON_DECODE_UNICODE` is `0`)
+> * `deserializeMsgPack()` replaces unsupported values with `null`s
+>
+> #### Const-aware `is<T>()`
+>
+> Lastly, a very minor change concerns `JsonVariantConst::is<T>()`.
+> It used to return `true` for `JsonArray` and `JsonOject`, but now it returns `false`.
+> Instead, you must use `JsonArrayConst` and `JsonObjectConst`.
+
+v6.17.3 (2021-02-15)
+-------
+
+* Made `JsonDocument`'s destructor protected (issue #1480)
+* Added missing calls to `client.stop()` in `JsonHttpClient.ino` (issue #1485)
+* Fixed error `expected ')' before 'char'` when `isdigit()` is a macro (issue #1487)
+* Fixed error `definition of implicit copy constructor is deprecated` on Clang 10
+* PlatformIO: set framework compatibility to `*` (PR #1490 by @maxgerhardt)
+
+v6.17.2 (2020-11-14)
+-------
+
+* Fixed invalid conversion error in `operator|(JsonVariant, char*)` (issue #1432)
+* Changed the default value of `ARDUINOJSON_ENABLE_PROGMEM` (issue #1433).
+  It now checks that the `pgm_read_XXX` macros are defined before enabling `PROGMEM`.
+
+v6.17.1 (2020-11-07)
+-------
+
+* Fixed error `ambiguous overload for 'operator|'` (issue #1411)
+* Fixed `operator|(MemberProxy, JsonObject)` (issue #1415)
+* Allowed more than 32767 values in non-embedded mode (issue #1414)
+
+v6.17.0 (2020-10-19)
+-------
+
+* Added a build failure when nullptr is defined as a macro (issue #1355)
+* Added `JsonDocument::overflowed()` which tells if the memory pool was too small (issue #1358)
+* Added `DeserializationError::EmptyInput` which tells if the input was empty
+* Added `DeserializationError::f_str()` which returns a `const __FlashStringHelper*` (issue #846)
+* Added `operator|(JsonVariantConst, JsonVariantConst)`
+* Added filtering for MessagePack (issue #1298, PR #1394 by Luca Passarella)
+* Moved float convertion tables to PROGMEM
+* Fixed `JsonVariant::set((char*)0)` which returned false instead of true (issue #1368)
+* Fixed error `No such file or directory #include <WString.h>` (issue #1381)
+
+v6.16.1 (2020-08-04)
+-------
+
+* Fixed `deserializeJson()` that stopped reading after `{}` (issue #1335)
+
+v6.16.0 (2020-08-01)
+-------
+
+* Added comparisons (`>`, `>=`, `==`, `!=`, `<`, and `<=`) between `JsonVariant`s
+* Added string deduplication (issue #1303)
+* Added `JsonString::operator!=`
+* Added wildcard key (`*`) for filters (issue #1309)
+* Set `ARDUINOJSON_DECODE_UNICODE` to `1` by default
+* Fixed `copyArray()` not working with `String`, `ElementProxy`, and `MemberProxy`
+* Fixed error `getOrAddElement is not a member of ElementProxy` (issue #1311)
+* Fixed excessive stack usage when compiled with `-Og` (issues #1210 and #1314)
+* Fixed `Warning[Pa093]: implicit conversion from floating point to integer` on IAR compiler (PR #1328 by @stawiski)
+
+v6.15.2 (2020-05-15)
+-------
+
+* CMake: don't build tests when imported in another project
+* CMake: made project arch-independent
+* Visual Studio: fixed error C2766 with flag `/Zc:__cplusplus` (issue #1250)
+* Added support for `JsonDocument` to `copyArray()` (issue #1255)
+* Added support for `enum`s in `as<T>()` and `is<T>()`  (issue #1256)
+* Added `JsonVariant` as an input type for `deserializeXxx()`  
+  For example, you can do: `deserializeJson(doc2, doc1["payload"])`
+* Break the build if using 64-bit integers with ARDUINOJSON_USE_LONG_LONG==0
+
+v6.15.1 (2020-04-08)
+-------
+
+* Fixed "maybe-uninitialized" warning (issue #1217)
+* Fixed "statement is unreachable" warning on IAR (issue #1233)
+* Fixed "pointless integer comparison" warning on IAR (issue #1233)
+* Added CMake "install" target (issue #1209)
+* Disabled alignment on AVR (issue #1231)
+
+v6.15.0 (2020-03-22)
+-------
+
+* Added `DeserializationOption::Filter` (issue #959)
+* Added example `JsonFilterExample.ino`
+* Changed the array subscript operator to automatically add missing elements
+* Fixed "deprecated-copy" warning on GCC 9 (fixes #1184)
+* Fixed `MemberProxy::set(char[])` not duplicating the string (issue #1191)
+* Fixed enums serialized as booleans (issue #1197)
+* Fixed incorrect string comparison on some platforms (issue #1198)
+* Added move-constructor and move-assignment to `BasicJsonDocument`
+* Added `BasicJsonDocument::garbageCollect()` (issue #1195)
+* Added `StaticJsonDocument::garbageCollect()`
+* Changed copy-constructor of `BasicJsonDocument` to preserve the capacity of the source.
+* Removed copy-constructor of `JsonDocument` (issue #1189)
+
+> ### BREAKING CHANGES
+> 
+> #### Copy-constructor of `BasicJsonDocument`
+>
+> In previous versions, the copy constructor of `BasicJsonDocument` looked at the source's `memoryUsage()` to choose its capacity.
+> Now, the copy constructor of `BasicJsonDocument` uses the same capacity as the source.
+>
+> Example:
+>
+> ```c++
+> DynamicJsonDocument doc1(64);
+> doc1.set(String("example"));
+>
+> DynamicJsonDocument doc2 = doc1;
+> Serial.print(doc2.capacity());  // 8 with ArduinoJson 6.14
+>                                 // 64 with ArduinoJson 6.15
+> ```
+>
+> I made this change to get consistent results between copy-constructor and move-constructor, and whether RVO applies or not.
+>
+> If you use the copy-constructor to optimize your documents, you can use `garbageCollect()` or `shrinkToFit()` instead.
+>
+> #### Copy-constructor of `JsonDocument`
+>
+> In previous versions, it was possible to create a function that take a `JsonDocument` by value.
+>
+> ```c++
+> void myFunction(JsonDocument doc) {}
+> ```
+>
+> This function gives the wrong clues because it doesn't receive a copy of the `JsonDocument`, only a sliced version.
+> It worked because the copy constructor copied the internal pointers, but it was an accident.
+>
+> From now, if you need to pass a `JsonDocument` to a function, you must use a reference:
+>
+> ```c++
+> void myFunction(JsonDocument& doc) {}
+> ```
+
 v6.14.1 (2020-01-27)
 -------
 
